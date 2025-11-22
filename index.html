@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EY BGO Julekalender</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              christmas: ['"Mountains of Christmas"', 'cursive'],
+            },
+            colors: {
+              ey: {
+                yellow: '#FFE600',
+                black: '#1A1A24',
+                gray: '#747480',
+                light: '#F6F6FA'
+              },
+              xmas: {
+                red: '#D42E12',
+                green: '#0F5132',
+                gold: '#FFD700'
+              }
+            },
+            animation: {
+              'fly-santa': 'flySanta 6s linear forwards',
+              'snow': 'snow 10s linear infinite',
+              'slide-in-right': 'slideInRight 0.3s ease-out forwards',
+              'pulse-gold': 'pulseGold 2s infinite',
+              'swing': 'swing 3s ease-in-out infinite alternate',
+            },
+            keyframes: {
+              flySanta: {
+                '0%': { transform: 'translateX(-20vw) translateY(50px) rotate(-5deg)' },
+                '25%': { transform: 'translateX(25vw) translateY(20px) rotate(0deg)' },
+                '50%': { transform: 'translateX(50vw) translateY(50px) rotate(5deg)' },
+                '75%': { transform: 'translateX(80vw) translateY(20px) rotate(0deg)' },
+                '100%': { transform: 'translateX(150vw) translateY(50px) rotate(-5deg)' }, /* Goes much further now */
+              },
+              snow: {
+                '0%': { transform: 'translateY(-10vh)' },
+                '100%': { transform: 'translateY(110vh)' },
+              },
+              slideInRight: {
+                '0%': { transform: 'translateX(100%)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
+              pulseGold: {
+                '0%, 100%': { boxShadow: '0 0 0 0 rgba(255, 230, 0, 0.7)' },
+                '50%': { boxShadow: '0 0 20px 5px rgba(255, 230, 0, 0)' },
+              },
+              swing: {
+                '0%': { transform: 'rotate(3deg)' },
+                '100%': { transform: 'rotate(-3deg)' }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #F6F6FA;
+        color: #1A1A24;
+        overflow-x: hidden; /* Critical for Santa to fly off screen */
+      }
+      /* Custom scrollbar for leaderboard */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+      
+      .snowflake {
+        position: fixed;
+        top: -10px;
+        color: #ddd;
+        font-size: 1.5em;
+        font-family: Arial, sans-serif;
+        text-shadow: 0 0 5px #000;
+        user-select: none;
+        z-index: 0;
+        pointer-events: none;
+        animation-name: snow;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        opacity: 0.6;
+      }
+      
+      .snowflake:nth-of-type(0) { left: 1%; animation-duration: 10s; animation-delay: 0s; }
+      .snowflake:nth-of-type(1) { left: 10%; animation-duration: 10s; animation-delay: 1s; }
+      .snowflake:nth-of-type(2) { left: 20%; animation-duration: 6s; animation-delay: 0.5s; }
+      .snowflake:nth-of-type(3) { left: 30%; animation-duration: 12s; animation-delay: 2s; }
+      .snowflake:nth-of-type(4) { left: 40%; animation-duration: 8s; animation-delay: 1.5s; }
+      .snowflake:nth-of-type(5) { left: 50%; animation-duration: 11s; animation-delay: 3s; }
+      .snowflake:nth-of-type(6) { left: 60%; animation-duration: 7s; animation-delay: 2.5s; }
+      .snowflake:nth-of-type(7) { left: 70%; animation-duration: 13s; animation-delay: 1s; }
+      .snowflake:nth-of-type(8) { left: 80%; animation-duration: 9s; animation-delay: 0s; }
+      .snowflake:nth-of-type(9) { left: 90%; animation-duration: 11s; animation-delay: 2s; }
+
+      /* Mouse Trail Sparkle */
+      .sparkle {
+        position: fixed;
+        pointer-events: none;
+        background: radial-gradient(circle, #FFE600 10%, transparent 70%);
+        border-radius: 50%;
+        animation: fadeOut 1s linear forwards;
+        z-index: 9999;
+      }
+      @keyframes fadeOut {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0); }
+      }
+
+      /* Christmas Lights */
+      .light-rope {
+        display: flex;
+        justify-content: space-between;
+        width: 120%;
+        margin-left: -10%;
+        position: absolute;
+        top: -15px;
+        z-index: 30;
+        pointer-events: none;
+        animation: swing 3s ease-in-out infinite alternate;
+        transform-origin: top center;
+      }
+      .light-bulb {
+        width: 12px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #ccc;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: blink 2s infinite alternate;
+      }
+      .light-bulb:nth-child(odd) { animation-duration: 1.5s; }
+      .light-bulb:nth-child(3n) { animation-duration: 2.3s; }
+      
+      @keyframes blink {
+        0% { opacity: 0.5; box-shadow: 0 0 0 transparent; }
+        100% { opacity: 1; box-shadow: 0 0 15px currentColor; }
+      }
+
+      /* Confetti */
+      .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background-color: #f00;
+        animation: fall 3s linear forwards;
+        z-index: 100;
+      }
+      @keyframes fall {
+        to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <!-- Snowflakes decoration -->
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+  </body>
+</html>
